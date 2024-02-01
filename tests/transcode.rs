@@ -44,7 +44,7 @@ fn open_input_file(
   let mut ifmt_ctx = AVFormatContextInput::open(filename, None, &mut None)?;
   let mut stream_ctx = Vec::with_capacity(ifmt_ctx.nb_streams as usize);
 
-  for (i, input_stream) in ifmt_ctx.streams().into_iter().enumerate() {
+  for (i, input_stream) in ifmt_ctx.streams().iter().enumerate() {
     let codecpar = input_stream.codecpar();
     let codec_type = codecpar.codec_type();
     let dec_ctx = if codec_type.is_video() || codec_type.is_audio() {

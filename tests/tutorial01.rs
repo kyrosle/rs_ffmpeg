@@ -53,7 +53,7 @@ fn _main(file: &CStr, out_dir: &str) -> Result<()> {
   input_format_context.dump(0, file)?;
   let video_stream_index = input_format_context
     .streams()
-    .into_iter()
+    .iter()
     .position(|stream| stream.codecpar().codec_type().is_video())
     .context("No video stream")?;
   let mut decode_context = {
