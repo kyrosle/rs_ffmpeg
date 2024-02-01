@@ -553,7 +553,7 @@ mod non_windows {
         .statik(true)
         .cargo_metadata(true)
         .probe(&format!("lib{}", libname))
-        .unwrap_or_else(|_| panic!("{} not found!", libname))
+        .unwrap_or_else(|e| panic!("{} not found! \nerror: {:#?}", libname, e))
         .include_paths;
       for new_path in new_paths {
         let new_path = new_path.to_str().unwrap().to_string();
