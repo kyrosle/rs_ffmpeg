@@ -125,6 +125,7 @@ impl Drop for AVCodec {
 
 wrap_ref!(AVCodecContext: ffi::AVCodecContext);
 settable!(AVCodecContext {
+  codec_id: AVCodecID,
   framerate: AVRational,
   ch_layout: ffi::AVChannelLayout,
   height: i32,
