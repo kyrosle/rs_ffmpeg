@@ -12,8 +12,8 @@ pub type AVSampleFormat = ffi::AVSampleFormat;
 /// recognized.
 ///
 /// ```rust
-/// # use rsmpeg::avutil::get_sample_fmt_name;
-/// # use rsmpeg::ffi::AVSampleFormat_AV_SAMPLE_FMT_FLT;
+/// # use rs_ffmpeg::avutil::get_sample_fmt_name;
+/// # use rs_ffmpeg::ffi::AVSampleFormat_AV_SAMPLE_FMT_FLT;
 /// # use std::ffi::CString;
 /// # fn main() {
 /// assert_eq!(
@@ -35,8 +35,8 @@ pub fn get_sample_fmt_name(
 /// Return a sample format corresponding to name, or None on error.
 ///
 /// ```rust
-/// # use rsmpeg::avutil::get_sample_fmt;
-/// # use rsmpeg::ffi::AVSampleFormat_AV_SAMPLE_FMT_FLT;
+/// # use rs_ffmpeg::avutil::get_sample_fmt;
+/// # use rs_ffmpeg::ffi::AVSampleFormat_AV_SAMPLE_FMT_FLT;
 /// # use std::ffi::CString;
 /// # fn main() {
 /// assert_eq!(
@@ -58,8 +58,8 @@ pub fn get_sample_fmt(name: &CStr) -> Option<AVSampleFormat> {
 ///
 /// i.e. [`AV_SAMPLE_FMT_S16P`](ffi::AVSampleFormat_AV_SAMPLE_FMT_S16P) => [`AV_SAMPLE_FMT_S16`](ffi::AVSampleFormat_AV_SAMPLE_FMT_S16)
 /// ```rust
-/// # use rsmpeg::avutil::get_packed_sample_fmt;
-/// # use rsmpeg::ffi::{AVSampleFormat_AV_SAMPLE_FMT_S16, AVSampleFormat_AV_SAMPLE_FMT_S16P};
+/// # use rs_ffmpeg::avutil::get_packed_sample_fmt;
+/// # use rs_ffmpeg::ffi::{AVSampleFormat_AV_SAMPLE_FMT_S16, AVSampleFormat_AV_SAMPLE_FMT_S16P};
 /// # fn main() {
 /// assert_eq!(
 ///     Some(AVSampleFormat_AV_SAMPLE_FMT_S16),
@@ -82,8 +82,8 @@ pub fn get_packed_sample_fmt(
 ///
 /// i.e. [`AV_SAMPLE_FMT_S16`](ffi::AVSampleFormat_AV_SAMPLE_FMT_S16) => [`AV_SAMPLE_FMT_S16P`](ffi::AVSampleFormat_AV_SAMPLE_FMT_S16P)
 /// ```rust
-/// # use rsmpeg::avutil::get_planar_sample_fmt;
-/// # use rsmpeg::ffi::{AVSampleFormat_AV_SAMPLE_FMT_S16, AVSampleFormat_AV_SAMPLE_FMT_S16P};
+/// # use rs_ffmpeg::avutil::get_planar_sample_fmt;
+/// # use rs_ffmpeg::ffi::{AVSampleFormat_AV_SAMPLE_FMT_S16, AVSampleFormat_AV_SAMPLE_FMT_S16P};
 /// # fn main() {
 /// assert_eq!(
 ///     Some(AVSampleFormat_AV_SAMPLE_FMT_S16P),

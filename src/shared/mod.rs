@@ -72,7 +72,7 @@ pub trait UnsafeDerefMut: Deref {
   /// # Safety
   ///
   /// This function should be used carefully, adding safe convenient for
-  /// rsmpeg is preferred.
+  /// rs_ffmpeg is preferred.
   unsafe fn deref_mut(&mut self) -> &mut Self::Target;
 }
 

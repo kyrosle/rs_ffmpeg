@@ -12,7 +12,7 @@ impl SwsContext {
   /// scaling/conversion operations using [`Self::scale()`].
   ///
   /// Return `None` when input is invalid. Parameter `flags` can be set to
-  /// `rsmpeg::ffi::SWS_FAST_BILINEAR` etc.
+  /// `rs_ffmpeg::ffi::SWS_FAST_BILINEAR` etc.
   #[allow(clippy::too_many_arguments)]
   pub fn get_context(
     src_w: i32,

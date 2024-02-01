@@ -1,4 +1,4 @@
-//! Errors of the rsmpeg.
+//! Errors of the rs_ffmpeg.
 use libc::c_int;
 use std::{
   cmp::{Eq, PartialEq},
@@ -8,7 +8,7 @@ use thiserror::Error;
 
 use crate::{ffi, shared::AVERROR_EAGAIN};
 
-/// All the error variants of rsmpeg.
+/// All the error variants of rs_ffmpeg.
 #[non_exhaustive]
 #[derive(Error, Debug, Eq, PartialEq)]
 pub enum RsmpegError {
