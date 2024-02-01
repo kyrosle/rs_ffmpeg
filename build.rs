@@ -12,21 +12,21 @@ use once_cell::sync::Lazy;
 // ------------------------ static variables ------------------------
 static TEMP_PATH: Lazy<String> = Lazy::new(|| {
   format!(
-    "{}/tmp",
-    env::var("OUT_DIR").expect("Failed to get out_dir directory"),
+    "{}/target/tmp",
+    env::var("CARGO_MANIFEST_DIR").expect("Failed to get out_dir directory"),
   )
 });
 static FFMPEG_PATH: Lazy<String> = Lazy::new(|| {
   format!(
-    "{}/tmp/ffmpeg",
-    env::var("OUT_DIR").expect("Failed to get out_dir directory"),
+    "{}/target/tmp/ffmpeg",
+    env::var("CARGO_MANIFEST_DIR").expect("Failed to get out_dir directory"),
   )
 });
 
 static FFMPEG_BUILD_PATH: Lazy<String> = Lazy::new(|| {
   format!(
-    "{}/tmp/ffmpeg_build",
-    env::var("OUT_DIR").expect("Failed to get out_dir directory"),
+    "{}/target/tmp/ffmpeg_build",
+    env::var("CARGO_MANIFEST_DIR").expect("Failed to get out_dir directory"),
   )
 });
 
@@ -49,6 +49,7 @@ fn git_clone_ffmpeg_source_and_build_lib() -> Result<()> {
   println!("ffmpeg_build_path = {}", *FFMPEG_BUILD_PATH);
   let current_path = pwd()?;
   fs::create_dir_all(TEMP_PATH.clone())?;
+  println!("pwd: {:#?}", current_path);
 
   if fs::metadata(FFMPEG_PATH.clone()).is_err()
     || fs::metadata(FFMPEG_BUILD_PATH.clone()).is_err()
@@ -99,8 +100,10 @@ fn git_clone_ffmpeg_source_and_build_lib() -> Result<()> {
       .arg("--enable-libvpx")
       .arg("--enable-libx264")
       // .arg("--enable-libx265")
-      // To workaround `https://github.com/larksuite/rsmpeg/pull/98#issuecomment-1467511193`
+      // To workaround `https://github.com/larksuite/rs_ffmpeg/pull/98#issuecomment-1467511193`
       .arg("--disable-decoder=exr,phm")
+      .arg("--enable-protocol=file")
+      .arg("--disable-sdl2")
       .arg("--disable-programs")
       .arg("--enable-nonfree")
       .status()?;
