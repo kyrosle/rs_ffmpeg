@@ -15,6 +15,7 @@ settable!(AVFrame {
   width: i32,
   height: i32,
   pts: i64,
+  pkt_dts: i64,
   time_base: ffi::AVRational,
   pict_type: ffi::AVPictureType,
   nb_samples: i32,
@@ -29,6 +30,7 @@ impl fmt::Debug for AVFrame {
       .field("width", &self.width)
       .field("height", &self.height)
       .field("pts", &self.pts)
+      .field("pkt_dts", &self.pkt_dts)
       .field("pict_type", &self.pict_type)
       .field("nb_samples", &self.nb_samples)
       .field("format", &self.format)
@@ -42,6 +44,28 @@ impl AVFrame {
   pub fn new() -> Self {
     let frame = unsafe { ffi::av_frame_alloc() }.upgrade().unwrap();
     unsafe { Self::from_raw(frame) }
+  }
+
+  pub fn create(
+    pix_fmt: AVPixelFormat,
+    width: i32,
+    height: i32,
+    align: i32,
+  ) -> Option<Self> {
+    let image = AVImage::new(pix_fmt, width, height, align);
+    if let Some(image) = image {
+      let mut frame = AVFrame::new();
+      unsafe {
+        // Borrow the image buffer.
+        frame.deref_mut().data.clone_from(image.data());
+        frame.deref_mut().linesize.clone_from(image.linesizes());
+        frame.deref_mut().width = image.width;
+        frame.deref_mut().height = image.height;
+        frame.deref_mut().format = image.pix_fmt;
+      }
+      return Some(frame);
+    }
+    None
   }
 
   /// Return true if the data and buffer of current frame is allocated.

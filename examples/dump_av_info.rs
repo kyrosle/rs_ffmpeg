@@ -12,6 +12,5 @@ fn dump_av_info(path: &CStr) -> Result<(), Box<dyn Error>> {
 }
 
 fn main() {
-  dump_av_info(&CString::new("./examples/bear.mp4").unwrap())
-    .unwrap();
+  dump_av_info(&CString::new("./examples/bear.mp4").unwrap()).unwrap();
 }
