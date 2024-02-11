@@ -180,6 +180,13 @@ impl AVFrame {
       Err(e) => Err(RsmpegError::AVError(e)),
     }
   }
+
+  /// Unreference all the buffers referenced by frame and reset the frame fields.
+  pub fn unref(&mut self) {
+    unsafe {
+      ffi::av_frame_unref(self.as_mut_ptr());
+    }
+  }
 }
 
 impl Clone for AVFrame {

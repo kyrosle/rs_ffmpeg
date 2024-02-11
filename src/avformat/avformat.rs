@@ -167,6 +167,27 @@ impl AVFormatContextInput {
     }
   }
 
+  /// Return the next packet of a stream. This function returns what is stored
+  /// in the file, and does not validate that what is there are valid packets
+  /// for the decoder. It will split what is stored in the file into packets
+  /// and return one for each call. It will not omit invalid data between
+  /// valid packets so as to give the decoder the maximum information possible
+  /// for decoding.
+  ///
+  /// In order to use avpacket variable as repurposed as possible
+  pub fn get_read_packet(
+    &mut self,
+    packet: &mut AVPacket,
+  ) -> Result<Option<()>> {
+    match unsafe { ffi::av_read_frame(self.as_mut_ptr(), packet.as_mut_ptr()) }
+      .upgrade()
+    {
+      Ok(_) => Ok(Some(())),
+      Err(ffi::AVERROR_EOF) => Ok(None),
+      Err(x) => Err(x)?,
+    }
+  }
+
   /// Return the stream index and stream decoder if there is any "best" stream.
   /// "best" means the most likely what the user wants.
   pub fn find_best_stream(
@@ -233,6 +254,28 @@ impl<'stream> AVFormatContextInput {
     }
 
     unsafe { std::slice::from_raw_parts(streams, len) }
+  }
+
+  /// Return slice of [`AVStreamMut`]
+  pub fn streams_mut(&'stream mut self) -> &'stream mut [AVStreamMut<'stream>] {
+    let streams =
+      self.streams as *const *mut ffi::AVStream as *mut AVStreamMut<'stream>;
+    let len = self.nb_streams as usize;
+
+    #[cfg(debug_assertions)]
+    {
+      let arr = unsafe {
+        std::slice::from_raw_parts_mut(
+          self.streams as *mut *mut ffi::AVStream,
+          len,
+        )
+      };
+      for ptr in arr {
+        assert!(!ptr.is_null());
+      }
+    }
+
+    unsafe { std::slice::from_raw_parts_mut(streams, len) }
   }
 
   /// Get [`AVInputFormatRef`] in the [`AVFormatContextInput`].
@@ -516,6 +559,7 @@ impl AVOutputFormat {
 wrap_ref_mut!(#[repr(transparent)] AVStream: ffi::AVStream);
 settable!(AVStream {
   time_base: AVRational,
+  duration: i64
 });
 
 impl AVStream {
@@ -528,6 +572,19 @@ impl AVStream {
       // FFmpeg's implementation, we can use nullptr in first parameter
       // and use const pointer in second parameter.
       ffi::av_guess_frame_rate(
+        ptr::null_mut(),
+        self.as_ptr() as *mut _,
+        ptr::null_mut(),
+      )
+    })
+  }
+
+  /// Guess the sample aspect ratio of a frame, based on both the stream and the\n frame aspect ratio.
+  ///
+  /// Return the guessed None sample_aspect_ratio, Some(0/1) if no idea
+  pub fn guess_sample_aspect_ratio(&self) -> Option<AVRational> {
+    Some(unsafe {
+      ffi::av_guess_sample_aspect_ratio(
         ptr::null_mut(),
         self.as_ptr() as *mut _,
         ptr::null_mut(),

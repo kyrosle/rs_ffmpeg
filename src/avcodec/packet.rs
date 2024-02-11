@@ -27,6 +27,15 @@ impl AVPacket {
       ffi::av_packet_rescale_ts(self.as_mut_ptr(), from, to);
     }
   }
+
+  /// Wipe the packet.
+  /// Unreference the buffer referenced by the packet and reset the
+  /// remaining packet fields to their default values.
+  pub fn unref(&mut self) {
+    unsafe {
+      ffi::av_packet_unref(self.as_mut_ptr());
+    }
+  }
 }
 
 impl fmt::Debug for AVPacket {

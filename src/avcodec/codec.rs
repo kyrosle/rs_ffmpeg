@@ -228,6 +228,19 @@ impl AVCodecContext {
     }
   }
 
+  /// Trying to pull a frame from current decoding_context([`AVCodecContext`]).
+  /// and store the frame in `frame: &mut AVFrame`
+  pub fn get_receive_frame(&mut self, frame: &mut AVFrame) -> Result<()> {
+    unsafe { ffi::avcodec_receive_frame(self.as_mut_ptr(), frame.as_mut_ptr()) }
+      .upgrade()
+      .map_err(|e| match e {
+        AVERROR_EAGAIN => RsmpegError::DecoderDrainError,
+        ffi::AVERROR_EOF => RsmpegError::DecoderFlushedError,
+        x => RsmpegError::ReceiveFrameError(x),
+      })
+      .map(|_| ())
+  }
+
   /// Trying to push a frame to current encoding_context([`AVCodecContext`]).
   pub fn send_frame(&mut self, frame: Option<&AVFrame>) -> Result<()> {
     let frame_ptr = match frame {
