@@ -99,3 +99,12 @@ pub fn av_rescale_q_rnd(
 ) -> i64 {
   unsafe { ffi::av_rescale_q_rnd(a, bq, cq, rnd as _) }
 }
+
+/// Reducing a fraction to its simplest form while keeping
+/// the result within the specified maximum values for the numerator and denominator.
+#[inline]
+pub fn av_reduce(a: &mut AVRational) -> libc::c_int {
+  unsafe {
+    ffi::av_reduce(&mut a.num, &mut a.den, a.num as i64, a.den as i64, i64::MAX)
+  }
+}
