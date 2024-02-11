@@ -8,7 +8,7 @@ use std::{
 use crate::{
   avutil::{AVChannelLayout, AVFrame},
   error::{Result, RsmpegError},
-  ffi,
+  ffi::{self, avfilter_link},
   shared::*,
 };
 
@@ -33,6 +33,26 @@ impl Drop for AVFilter {
 wrap_mut!(AVFilterContext: ffi::AVFilterContext);
 
 impl AVFilterContext {
+  /// call [`avfilter_link`] to link two AVFilterContext,
+  /// [attention]: this function should be called before [`AVFilterGraph::config`],
+  ///  and can't be called with [`AVFilterGraph::parse_ptr`] at the same time.
+  ///  - `srcpad` index of the output pad on the source filter
+  ///  - `dst`    the destination filter
+  ///  - `dstpad` index of the input pad on the destination filter
+  pub fn link(
+    &mut self,
+    srcpad: u32,
+    dst: &mut AVFilterContextMut,
+    dstpad: u32,
+  ) -> Result<()> {
+    unsafe {
+      avfilter_link(self.as_mut_ptr(), srcpad, dst.as_mut_ptr(), dstpad)
+    }
+    .upgrade()
+    .map(RsmpegError::AVFilterContextLinkError)?;
+    Ok(())
+  }
+
   /// Set property of a [`AVFilterContext`].
   pub fn opt_set_bin<U>(&mut self, key: &CStr, value: &U) -> Result<()> {
     unsafe {
@@ -264,6 +284,21 @@ impl AVFilterGraph {
     }
     .upgrade()?;
     Ok(())
+  }
+
+  pub fn dump(&self) -> Result<String> {
+    let ret_ptr =
+      unsafe { ffi::avfilter_graph_dump(self.as_ptr() as *mut _, ptr::null()) };
+    let dump_str = unsafe {
+      let c_str = CStr::from_ptr(ret_ptr);
+      match c_str.to_str() {
+        Ok(str_slice) => str_slice.to_string(),
+        Err(e) => {
+          format!("{:#?}", e)
+        }
+      }
+    };
+    Ok(dump_str)
   }
 
   /// Get a filter instance identified by instance name from graph.

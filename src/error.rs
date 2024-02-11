@@ -105,6 +105,9 @@ pub enum RsmpegError {
   #[error("SwsContext scale failed. ({0})")]
   SwsScaleError(c_int),
 
+  #[error("AVFilterContext link failed. ({0})")]
+  AVFilterContextLinkError(c_int),
+
   #[error("AVFrame buffer double allocating.")]
   AVFrameDoubleAllocatingError,
   #[error("AVFrame buffer allocating with incorrect parameters. ({0})")]
@@ -148,6 +151,7 @@ impl RsmpegError {
       | Self::DictionaryGetStringError(err)
       | Self::AVIOOpenError(err)
       | Self::SwsScaleError(err)
+      | Self::AVFilterContextLinkError(err)
       | Self::AVFrameInvalidAllocatingError(err)
       | Self::AVImageFillArrayError(err) => Some(*err),
 
